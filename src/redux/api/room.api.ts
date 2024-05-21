@@ -1,4 +1,4 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi,  } from '@reduxjs/toolkit/query/react';
 import { IRoomProps } from 'interface';
 import { useBaseQuery } from 'utils';
 
@@ -9,7 +9,7 @@ const RoomApi = createApi({
     getRooms: query<{ data: IRoomProps[] }, void>({
       query: () => '/room'
     }),
-    createRoom: mutation<{ data: any }, IRoomProps>({
+    createRoom: mutation<{ data: {message:string} }, IRoomProps>({
       query: room => ({
         url: '/room',
         method: 'POST',
@@ -19,7 +19,7 @@ const RoomApi = createApi({
     getRoomById: query<{ data: IRoomProps }, void>({
       query: id => `/room/${id}`
     }),
-    updateRoom: mutation<{ data: any }, IRoomProps>({
+    updateRoom: mutation<{ data: {message:string} }, IRoomProps>({
       query: ({ id, ...payload }) => ({
         url: `/room/${id}`,
         method: 'PUT',
