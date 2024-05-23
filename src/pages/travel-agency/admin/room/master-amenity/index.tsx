@@ -1,8 +1,8 @@
 import Button from 'components/base/Button';
-import FilterTab from 'components/common/FilterTab';
+import FilterTab, { FilterTabItem } from 'components/common/FilterTab';
 import SearchBox from 'components/common/SearchBox';
-import React, { useEffect, useState } from 'react';
-import { Breadcrumb, Form, Modal } from 'react-bootstrap';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { Form, Modal } from 'react-bootstrap';
 import {
   useCreateMasterAmenityMutation,
   useDeleteMasterAmenityByIdMutation,
@@ -17,6 +17,60 @@ import { UilEdit, UilTrash } from '@iconscout/react-unicons';
 import { masterAmenityValidationSchema } from 'validation';
 import { Formik } from 'formik';
 import { FloatingLabel } from 'react-bootstrap';
+import FilterButtonGroup, {
+  FilterMenu
+} from 'components/common/FilterButtonGroup';
+import PageBreadcrumb from 'components/common/PageBreadcrumb';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExport, faPlus } from '@fortawesome/free-solid-svg-icons';
+
+const tabItems: FilterTabItem[] = [
+  {
+    label: 'All',
+    value: 'all',
+    count: 68817
+  },
+  {
+    label: 'Archived',
+    value: 'archived',
+    count: 70348
+  },
+  {
+    label: 'Trash',
+    value: 'trash',
+    count: 17
+  }
+];
+const filterMenus: FilterMenu[] = [
+  {
+    label: 'Category',
+    items: [
+      {
+        label: 'Plants'
+      },
+      {
+        label: 'Furniture'
+      },
+      {
+        label: 'Fashion'
+      }
+    ]
+  },
+  {
+    label: 'Contacts',
+    items: [
+      {
+        label: 'Blue Olive Plant sellers. Inc'
+      },
+      {
+        label: 'Beatrice Furnitures'
+      },
+      {
+        label: 'Kizzstore'
+      }
+    ]
+  }
+];
 
 export const MasterAmenityPage = () => {
   const {
@@ -83,6 +137,7 @@ export const MasterAmenityPage = () => {
     {
       accessorKey: 'amenity_name',
       header: 'Room Amenity',
+      searchInput: true,
       meta: {
         cellProps: {
           style: {
@@ -92,16 +147,24 @@ export const MasterAmenityPage = () => {
       },
       cell: ({ row }) => {
         const { amenity_name } = row.original;
-        return <p className="fs-8 text-capitalize">{amenity_name}</p>;
+        return <span className="fs-8 text-capitalize">{amenity_name}</span>;
       }
     },
     {
       accessorKey: 'id',
       header: 'Actions',
+      meta: {
+        headerProps: {
+          className: 'text-end'
+        },
+        cellProps: {
+          className: 'text-end'
+        }
+      },
       cell: ({ row }) => {
         const { _id, id } = row.original;
         return (
-          <div className="d-flex gap-3">
+          <div className="d-flex gap-3 justify-content-end py-1">
             <div
               className="bg-info-subtle p-1 text-info rounded-1"
               onClick={() => console.log(_id)}
@@ -144,68 +207,69 @@ export const MasterAmenityPage = () => {
     console.log(id);
     await DeleteMasterAmenity(id);
   };
+
+  const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    table.setGlobalFilter(e.target.value || undefined);
+  };
   return (
     <div>
-      <Breadcrumb className="mb-0">
-        <Breadcrumb.Item href="#!">Home</Breadcrumb.Item>
-        <Breadcrumb.Item href="#!">Hotels</Breadcrumb.Item>
-        <Breadcrumb.Item href="#!">Room</Breadcrumb.Item>
-        <Breadcrumb.Item href="#!" active>
-          Master Amenities
-        </Breadcrumb.Item>
-      </Breadcrumb>
-      <h2 className="fs-5 my-4">
-        Master Amenities Listing - {masterAmenity?.data.length}
-      </h2>
-      <div className="d-flex justify-content-between align-content-center">
-        <div className="gap-3 d-flex">
-          <Button variant="primary" onClick={handleShow}>
-            Create Listing
-          </Button>
-          <Button variant="phoenix-primary">Exports</Button>
-        </div>
-        <div className="d-flex gap-3 align-content-center">
-          <SearchBox />
-          <FilterTab
-            className="mt-1"
-            tabItems={[
-              {
-                count: masterAmenity?.data.length as number,
-                label: 'all',
-                value: 'all',
-                onClick: () => {}
-              },
-              {
-                count: masterAmenity?.data.length as number,
-                label: 'asc',
-                value: 'asc',
-                onClick: () => {}
-              },
-              {
-                count: masterAmenity?.data.length as number,
-                label: 'desc',
-                value: 'desc',
-                onClick: () => {}
-              }
-            ]}
-          />
-        </div>
-      </div>
-      <div className="mt-5">
+      <PageBreadcrumb
+        items={[
+          {
+            label: 'Home',
+            url: '#!'
+          },
+          {
+            label: 'Rooms',
+            url: '#!'
+          },
+          {
+            label: 'Amenities',
+            url: '#!'
+          },
+          {
+            label: 'List',
+            active: true
+          }
+        ]}
+      />
+      <div className="mb-9">
+        <h2 className="mb-4">Master Amenities</h2>
+        <FilterTab tabItems={tabItems} className="mb-2" />
         <AdvanceTableProvider {...table}>
-          <AdvanceTable
-            isLoading={
-              isMasterAmenityLoading ||
-              isNewMasterAmenityLoading ||
-              isDeleteMasterAmenityLoading
-            }
-            tableProps={{
-              size: 'sm',
-              className: 'phoenix-table fs-9 mb-0 border-top border-200'
-            }}
-            rowClassName="hover-actions-trigger btn-reveal-trigger position-static"
-          />
-          <AdvanceTableFooter pagination showViewAllBtn={false} />
+          <div className="mb-4">
+            <div className="d-flex flex-wrap gap-3">
+              <SearchBox
+                placeholder="Search amenities"
+                onChange={handleSearchInputChange}
+              />
+              <div className="scrollbar overflow-hidden-y">
+                <FilterButtonGroup menus={filterMenus} />
+              </div>
+              <div className="ms-xxl-auto">
+                <Button variant="link" className="text-body me-4 px-0">
+                  <FontAwesomeIcon icon={faFileExport} className="fs-9 me-2" />
+                  Export
+                </Button>
+                <Button variant="primary" onClick={handleShow}>
+                  <FontAwesomeIcon icon={faPlus} className="me-2" />
+                  Add Master Amenity
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
+            <AdvanceTable
+              isLoading={
+                isMasterAmenityLoading ||
+                isNewMasterAmenityLoading ||
+                isDeleteMasterAmenityLoading
+              }
+              tableProps={{ className: 'phoenix-table fs-9', size: 'sm' }}
+            />
+            <AdvanceTableFooter pagination />
+          </div>
         </AdvanceTableProvider>
       </div>
       <Modal show={show} onHide={handleClose}>

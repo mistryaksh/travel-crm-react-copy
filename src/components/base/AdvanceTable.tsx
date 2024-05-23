@@ -24,7 +24,7 @@ const AdvanceTable = ({
   const { getRowModel, getFlatHeaders, getFooterGroups } = table;
 
   return (
-    <div className="scrollbar ms-n1 ps-1 phoenix-table table-responsive mx-n1 px-1">
+    <div className="scrollbar ms-n1 ps-1">
       {isLoading && (
         <div
           style={{
