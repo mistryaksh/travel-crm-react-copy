@@ -200,9 +200,10 @@ export const MasterAmenityPage = () => {
               isDeleteMasterAmenityLoading
             }
             tableProps={{
-              className: ''
+              size: 'sm',
+              className: 'phoenix-table fs-9 mb-0 border-top border-200'
             }}
-            headerClassName="text-uppercase fs-9"
+            rowClassName="hover-actions-trigger btn-reveal-trigger position-static"
           />
           <AdvanceTableFooter pagination showViewAllBtn={false} />
         </AdvanceTableProvider>
