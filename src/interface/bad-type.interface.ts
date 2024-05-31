@@ -1,5 +1,7 @@
-import { IDefaultEntityProps } from './default-entity.interface';
-
-export interface IBedTypeProps extends IDefaultEntityProps {
-  label: string;
+export interface IBedTypeProps {
+  _id?: string;
+  BedTypeCode?: string;
+  BedTypeSystemCode?: string;
+  BedType: string;
+  BedTypeIcon: string;
 }

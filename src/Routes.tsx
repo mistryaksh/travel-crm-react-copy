@@ -7,27 +7,41 @@ import Error404 from 'pages/error/Error404';
 import { DashboardPage } from 'pages/dashboard';
 import {
   AmenityPage,
+  BedTypeListPage,
   ListCustomerPage,
   ListRoomsPage,
   MasterAmenityPage,
   NewCustomerPage,
   NewRoomPage,
+  PaymentModeListPage,
+  PropertyTypeListPage,
+  RoomCategoryPage,
+  SystemCodeListPage,
   UploadNewHotelPage
 } from 'pages/travel-agency';
 import ChatHomepage from 'pages/apps/chat/ChatHomepage';
 import ChatConversation from 'pages/apps/chat/ChatConversation';
 import { CommonChatPage } from 'pages/common-chat';
+import SignIn from 'pages/pages/authentication/simple/SignIn';
+import { PrivateRoutes } from 'components/protection';
 
 const routes: RouteObject[] = [
   {
     element: <App />,
     children: [
       {
+        path: '/admin/sign-in',
+        element: <SignIn />
+      },
+
+      {
         path: '/',
         element: (
-          <MainLayoutProvider>
-            <MainLayout />
-          </MainLayoutProvider>
+          <PrivateRoutes>
+            <MainLayoutProvider>
+              <MainLayout />
+            </MainLayoutProvider>
+          </PrivateRoutes>
         ),
         children: [
           {
@@ -38,6 +52,16 @@ const routes: RouteObject[] = [
             path: '/admin/new-hotel',
             index: true,
             element: <UploadNewHotelPage />
+          },
+          {
+            path: '/admin/property-type',
+            index: true,
+            element: <PropertyTypeListPage />
+          },
+          {
+            path: '/admin/system-code',
+            index: true,
+            element: <SystemCodeListPage />
           },
           {
             path: '/admin/amenity',
@@ -59,7 +83,21 @@ const routes: RouteObject[] = [
             index: true,
             element: <ListRoomsPage />
           },
-
+          {
+            path: '/admin/payment-mode',
+            index: true,
+            element: <PaymentModeListPage />
+          },
+          {
+            path: '/admin/room/category',
+            index: true,
+            element: <RoomCategoryPage />
+          },
+          {
+            path: '/admin/room/bed',
+            index: true,
+            element: <BedTypeListPage />
+          },
           {
             path: '*',
             element: <Error404 />

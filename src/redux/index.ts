@@ -1,36 +1,51 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { TypedUseSelectorHook, useDispatch } from 'react-redux';
-import {
-  AmenityApiMiddleware,
-  AmenityApiReducer,
-  MasterAmenityApiMiddleware,
-  MasterAmenityApiReducer,
-  RoomApiMiddleware,
-  RoomApiReducer,
-  RoomBedApiMiddleware,
-  RoomBedApiReducer,
-  RoomCategoryApiMiddleware,
-  RoomCategoryApiReducer
-} from './api';
+
 import { useSelector } from 'react-redux';
+import {
+  AuthenticationReducer,
+  AuthenticationMiddleware,
+  PropertyTypeApiMiddleware,
+  PropertyTypeApiReducer,
+  systemCodesApiReducer,
+  systemCodesApiMiddleware,
+  AmenitiesCategoryApiMiddleware,
+  AmenitiesCategoryApiReducer,
+  AmenityApiReducer,
+  AmenityMiddleware,
+  PaymentModeApiReducer,
+  PaymentModeApiMiddleware,
+  RoomCategoryApiMiddleware,
+  RoomCategoryApiReducer,
+  BedTypeApiReducer,
+  BedTypeApiMiddleware
+} from './api';
+import { AmenityReducer } from './feature';
 
 export const store = configureStore({
   reducer: {
+    authenticationApi: AuthenticationReducer,
+    propertyTypeApi: PropertyTypeApiReducer,
+    systemCodesApi: systemCodesApiReducer,
+    amenityCategoryApi: AmenitiesCategoryApiReducer,
     amenityApi: AmenityApiReducer,
-    masterAmenityApi: MasterAmenityApiReducer,
-    roomBedApi: RoomBedApiReducer,
+    amenity: AmenityReducer,
+    paymentModeApi: PaymentModeApiReducer,
     roomCategoryApi: RoomCategoryApiReducer,
-    roomApi: RoomApiReducer
+    bedTypeApi: BedTypeApiReducer
   },
   middleware: getDefaultMiddleware =>
-    getDefaultMiddleware().concat(
-      AmenityApiMiddleware,
-      MasterAmenityApiMiddleware,
-      RoomBedApiMiddleware,
+    getDefaultMiddleware().concat([
+      AuthenticationMiddleware,
+      PropertyTypeApiMiddleware,
+      systemCodesApiMiddleware,
+      AmenitiesCategoryApiMiddleware,
+      AmenityMiddleware,
+      PaymentModeApiMiddleware,
       RoomCategoryApiMiddleware,
-      RoomApiMiddleware
-    )
+      BedTypeApiMiddleware
+    ])
 });
 
 setupListeners(store.dispatch);

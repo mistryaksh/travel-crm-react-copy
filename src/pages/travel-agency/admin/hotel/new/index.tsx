@@ -186,6 +186,7 @@ export const UploadNewHotelPage = () => {
                   </Button>
                 </InputGroup>
                 <Mapbox
+                  accessKey={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
                   className="rounded-4 w-100 border my-4"
                   style={{ height: 250, width: '100%' }}
                   options={{

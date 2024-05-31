@@ -1,14 +1,13 @@
-import React, { ChangeEvent, useEffect } from 'react';
+import React, { ChangeEvent } from 'react';
 
 import Button from 'components/base/Button';
 import SearchBox from 'components/common/SearchBox';
 import FilterTab, { FilterTabItem } from 'components/common/FilterTab';
-import { useGetRoomsQuery } from '../../../../../redux/api';
 import AdvanceTableProvider from 'providers/AdvanceTableProvider';
 import AdvanceTable from 'components/base/AdvanceTable';
 import AdvanceTableFooter from 'components/base/AdvanceTableFooter';
 import useAdvanceTable from 'hooks/useAdvanceTable';
-import { IAmenityProps, IRoomProps, useColumnsProps } from 'interface';
+import { IAmenitiesProps, IRoomProps, useColumnsProps } from 'interface';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBaby,
@@ -80,14 +79,7 @@ const filterMenus: FilterMenu[] = [
 ];
 
 export const ListRoomsPage = () => {
-  const { isError, error, data, isLoading } = useGetRoomsQuery();
   const pageSize: number = 15;
-
-  useEffect(() => {
-    if (isError) {
-      console.log(error);
-    }
-  }, [isError, error]);
 
   const columns: useColumnsProps<IRoomProps>[] = [
     {
@@ -98,7 +90,7 @@ export const ListRoomsPage = () => {
         cellProps: { className: 'ps-4' }
       },
       cell: ({ row }) => {
-        const { photos, room_name, room_category } = row.original;
+        const { photos, room_name } = row.original;
         return (
           <div className="d-flex gap-3 align-items-center my-2 pt-0 pb-0">
             <img width={53} src={photos[0]} alt={room_name} />
@@ -108,7 +100,7 @@ export const ListRoomsPage = () => {
               </Link>
               <span className="text-capitalize fw-semibold text-body text-nowrap mt-0 mb-2 d-flex flex-row gap-1 align-items-center">
                 <FontAwesomeIcon icon={faBorderAll} />
-                {room_category[0]?.category_name}
+                {/* {room_category[0]} */}
               </span>
             </div>
           </div>
@@ -231,13 +223,13 @@ export const ListRoomsPage = () => {
         return (
           <div className="d-flex flex-wrap gap-2">
             {amenities.length !== 0 &&
-              (amenities as IAmenityProps[])?.map(({ amenity_name }) => (
+              (amenities as IAmenitiesProps[])?.map(({ AmenitiesName }) => (
                 <Link
-                  key={amenity_name}
+                  key={AmenitiesName}
                   to="#"
                   className="text-decoration-none"
                 >
-                  <Badge variant="tag">{amenity_name}</Badge>
+                  <Badge variant="tag">{AmenitiesName}</Badge>
                 </Link>
               ))}
             {amenities.length === 0 && <span>No amenities avaliable</span>}
@@ -278,7 +270,7 @@ export const ListRoomsPage = () => {
   ];
 
   const tableOptions = {
-    data: data?.data || [],
+    data: [],
     columns,
     pageSize: pageSize,
     pagination: true,
@@ -345,7 +337,6 @@ export const ListRoomsPage = () => {
 
           <div className="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
             <AdvanceTable
-              isLoading={isLoading}
               tableProps={{ className: 'phoenix-table fs-9', size: 'sm' }}
             />
             <AdvanceTableFooter pagination />
@@ -355,3 +346,5 @@ export const ListRoomsPage = () => {
     </div>
   );
 };
+
+export * from './room-category';

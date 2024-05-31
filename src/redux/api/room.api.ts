@@ -1,41 +1,64 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { IRoomProps } from 'interface';
+import { IRoomCategoryProps } from 'interface';
 import { useBaseQuery } from 'utils';
 
-const RoomApi = createApi({
-  reducerPath: 'roomApi',
+const RoomCategoryApi = createApi({
+  reducerPath: 'roomCategoryApi',
   baseQuery: useBaseQuery,
+  tagTypes: ['roomCategoryApi'],
   endpoints: ({ mutation, query }) => ({
-    getRooms: query<{ data: IRoomProps[] }, void>({
-      query: () => '/room'
+    getRoomCategory: query<{ data: IRoomCategoryProps[] }, void>({
+      query: () => '/room/category',
+      providesTags: ['roomCategoryApi']
     }),
-    createRoom: mutation<{ data: { message: string } }, IRoomProps>({
-      query: room => ({
-        url: '/room',
-        method: 'POST',
-        body: room
-      })
+    getRoomCategoryById: query<{ data: IRoomCategoryProps }, string>({
+      query: roomCategoryId => `/room/category/${roomCategoryId}`,
+      providesTags: ['roomCategoryApi']
     }),
-    getRoomById: query<{ data: IRoomProps }, void>({
-      query: id => `/room/${id}`
+    addRoomCategory: mutation<{ data: string }, IRoomCategoryProps>({
+      query: payload => {
+        return {
+          url: '/room/category',
+          method: 'POST',
+          body: {
+            ...payload
+          }
+        };
+      },
+      invalidatesTags: ['roomCategoryApi']
     }),
-    updateRoom: mutation<{ data: { message: string } }, IRoomProps>({
-      query: ({ id, ...payload }) => ({
-        url: `/room/${id}`,
-        method: 'PUT',
-        body: {
-          ...payload
-        }
-      })
+    updateRoomCategory: mutation<{ data: string }, IRoomCategoryProps>({
+      query: ({ ...payload }) => {
+        return {
+          url: `/room/category/${payload.RoomCategoryId}`,
+          method: 'PUT',
+          body: {
+            ...payload
+          }
+        };
+      },
+      invalidatesTags: ['roomCategoryApi']
+    }),
+    deleteRoomCategory: mutation<{ data: string }, string>({
+      query: roomCategoryId => {
+        return {
+          url: `/room/category/${roomCategoryId}`,
+          method: 'DELETE'
+        };
+      },
+      invalidatesTags: ['roomCategoryApi']
     })
   })
 });
 
+export const RoomCategoryApiReducer = RoomCategoryApi.reducer;
+export const RoomCategoryApiMiddleware = RoomCategoryApi.middleware;
 export const {
-  useGetRoomsQuery,
-  useCreateRoomMutation,
-  useGetRoomByIdQuery,
-  useUpdateRoomMutation
-} = RoomApi;
-export const RoomApiReducer = RoomApi.reducer;
-export const RoomApiMiddleware = RoomApi.middleware;
+  useAddRoomCategoryMutation,
+  useDeleteRoomCategoryMutation,
+  useGetRoomCategoryByIdQuery,
+  useGetRoomCategoryQuery,
+  useLazyGetRoomCategoryByIdQuery,
+  useLazyGetRoomCategoryQuery,
+  useUpdateRoomCategoryMutation
+} = RoomCategoryApi;

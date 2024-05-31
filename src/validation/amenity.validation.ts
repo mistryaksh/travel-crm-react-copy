@@ -1,7 +1,13 @@
 import { boolean, object, string } from 'yup';
 
-export const amenityValidationSchema = object().shape({
-  amenity_name: string().required(),
-  default_action: boolean(),
-  mst_amenities: string().required()
+export const amenityCategoryValidationSchema = object().shape({
+  AmenitiesCategory: string().required(),
+  AmenitiesCategoryIcon: string().required()
+});
+
+export const masterAmenityValidationSchema = object().shape({
+  AmenitiesName: string().required(),
+  AmenitiesIcon: string().required(),
+  AmenitiesShortDetail: string().required(),
+  isChargeable: boolean().required()
 });

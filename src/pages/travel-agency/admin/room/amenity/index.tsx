@@ -1,10 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import {
-  useCreateAmenityMutation,
-  useDeleteAmenityMutation,
-  useGetAmenitiesQuery,
-  useGetMasterAmenitiesQuery
-} from '../../../../../redux/api';
+
 import { FloatingLabel, Form, Modal } from 'react-bootstrap';
 import Button from 'components/base/Button';
 import SearchBox from 'components/common/SearchBox';
@@ -12,17 +7,22 @@ import FilterTab, { FilterTabItem } from 'components/common/FilterTab';
 import AdvanceTableProvider from 'providers/AdvanceTableProvider';
 import AdvanceTable from 'components/base/AdvanceTable';
 import useAdvanceTable from 'hooks/useAdvanceTable';
-import { IAmenityProps, IMasterAmenityProps, useColumnsProps } from 'interface';
+import { IAmenitiesCategoryProps, useColumnsProps } from 'interface';
 import AdvanceTableFooter from 'components/base/AdvanceTableFooter';
 import { UilEdit, UilTrash } from '@iconscout/react-unicons';
 import { Formik } from 'formik';
-import { amenityValidationSchema } from 'validation';
 import { faFileExport, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PageBreadcrumb from 'components/common/PageBreadcrumb';
 import FilterButtonGroup, {
   FilterMenu
 } from 'components/common/FilterButtonGroup';
+import {
+  useAddAmenityCategoryMutation,
+  useDeleteAmenityCategoryMutation,
+  useGetAmenityCategoryQuery
+} from '../../../../../redux/api';
+import { amenityCategoryValidationSchema } from 'validation';
 
 const tabItems: FilterTabItem[] = [
   {
@@ -74,61 +74,52 @@ const filterMenus: FilterMenu[] = [
     ]
   }
 ];
+
 export const AmenityPage = () => {
   const {
     data: amenityData,
     isError: isAmenityError,
     error: amenityError,
-    isLoading: isAmenityLoading
-  } = useGetAmenitiesQuery();
-  const {
-    isError: isMasterAmenityError,
-    error: masterAmenityError,
-    data: masterAmenityData,
-    isLoading: isMasterAmenityDataLoading
-  } = useGetMasterAmenitiesQuery();
+    isLoading: isAmenityLoading,
+    isSuccess: isAmenitySuccess
+  } = useGetAmenityCategoryQuery();
   const [
-    NewAmenity,
+    AddAmenityCategory,
     {
       isError: isNewError,
       error: newError,
-      data: newAmenityData,
-      isLoading: isNewAmenityLoading,
-      isSuccess: isNewAmenitySuccess
+      isLoading: isNewLoading,
+      isSuccess: isNewSuccess,
+      data: newData
     }
-  ] = useCreateAmenityMutation();
+  ] = useAddAmenityCategoryMutation();
   const [
-    DeleteAmenity,
+    DeleteAmenityCategory,
     {
-      isError: isDeleteError,
-      error: deleteError,
-      data: deleteData,
-      isLoading: isDeleteLoading,
-      isSuccess: isDeleteSuccess
+      isError: isDeleteAmenityError,
+      error: deleteAmenityError,
+      isLoading: isDeleteAmenityLoading,
+      isSuccess: isDeleteAmenitySuccess,
+      data: deleteAmenityData
     }
-  ] = useDeleteAmenityMutation();
+  ] = useDeleteAmenityCategoryMutation();
 
   const onNewAmenity = async ({
-    amenity_name,
-    default_action,
-    mst_amenities
-  }: IAmenityProps) => {
-    await NewAmenity({
-      amenity_name: amenity_name,
-      default_action: default_action,
-      mst_amenities: mst_amenities as string
-    });
+    AmenitiesCategory,
+    AmenitiesCategoryIcon
+  }: IAmenitiesCategoryProps) => {
+    await AddAmenityCategory({ AmenitiesCategory, AmenitiesCategoryIcon });
   };
 
   const OnDeleteAmenity = async (id: string) => {
-    return await DeleteAmenity(id);
+    await DeleteAmenityCategory(id);
   };
 
   const pageSize: number = 10;
 
-  const columns: useColumnsProps<IAmenityProps>[] = [
+  const columns: useColumnsProps<IAmenitiesCategoryProps>[] = [
     {
-      accessorKey: 'amenity_name',
+      accessorKey: 'AmenitiesName',
       header: 'Room Amenity',
       meta: {
         cellProps: {
@@ -138,19 +129,19 @@ export const AmenityPage = () => {
         }
       },
       cell: ({ row }) => {
-        const { amenity_name } = row.original;
-        return <span className="fs-8 text-capitalize">{amenity_name}</span>;
+        const { AmenitiesCategory } = row.original;
+        return (
+          <span className="fs-8 text-capitalize">{AmenitiesCategory}</span>
+        );
       }
     },
     {
-      accessorKey: 'mst_amenities',
+      accessorKey: 'AmenitiesCategorySystem',
       header: 'Room Master Amenity',
       cell: ({ row }) => {
-        const { mst_amenities } = row.original;
+        const { AmenitiesCategorySystem } = row.original;
         return (
-          <span className="text-capitalize">
-            {(mst_amenities as IMasterAmenityProps)?.amenity_name as string}
-          </span>
+          <span className="text-capitalize">{AmenitiesCategorySystem}</span>
         );
       }
     },
@@ -166,19 +157,21 @@ export const AmenityPage = () => {
         }
       },
       cell: ({ row }) => {
-        const { _id } = row.original;
+        const { AmenitiesCategoryId } = row.original;
         return (
           <div className="d-flex gap-3 justify-content-end py-1">
             <div
               className="bg-info-subtle p-1 text-info rounded-1"
-              onClick={() => console.log(_id)}
+              onClick={() => console.log(AmenitiesCategoryId)}
             >
               <UilEdit size={18} />
             </div>
             <div>
               <Button
                 className="bg-danger-subtle p-1 text-danger rounded-1"
-                onClick={() => OnDeleteAmenity(_id as unknown as string)}
+                onClick={() =>
+                  OnDeleteAmenity(AmenitiesCategoryId as unknown as string)
+                }
               >
                 <UilTrash size={18} />
               </Button>
@@ -194,46 +187,42 @@ export const AmenityPage = () => {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
-    if (isMasterAmenityError) {
-      console.log(masterAmenityError);
-    }
     if (isAmenityError) {
       console.log(amenityError);
     }
+    if (isAmenitySuccess) {
+      console.log(amenityData?.data);
+    }
     if (isNewError) {
-      if ((newError as unknown as { data: string }).data) {
-        console.log((newError as { data: { message: string } }).data.message);
-      } else {
-        console.log(newError);
-      }
+      console.log(newError);
     }
-    if (isNewAmenitySuccess) {
+    if (isNewSuccess) {
+      console.log(newData?.data);
       setShow(false);
     }
-    if (isDeleteError) {
-      console.log(deleteError);
+    if (isDeleteAmenityError) {
+      console.log(deleteAmenityError);
     }
-    if (isDeleteSuccess) {
-      console.log('DELEING SUCCESS', deleteData.data);
+    if (isDeleteAmenitySuccess) {
+      console.log(deleteAmenityData.data);
     }
-    () => {
-      setShow(false);
-    };
   }, [
-    isMasterAmenityError,
-    masterAmenityError,
+    isAmenityError,
+    amenityError,
+    isAmenitySuccess,
+    amenityData?.data,
     isNewError,
     newError,
-    isNewAmenitySuccess,
-    newAmenityData,
-    isDeleteError,
-    deleteError,
-    isAmenityError,
-    amenityError
+    isNewSuccess,
+    newData?.data,
+    isDeleteAmenityError,
+    deleteAmenityError,
+    isDeleteAmenitySuccess,
+    deleteAmenityData?.data
   ]);
 
   const tableOptions = {
-    data: amenityData?.data || [],
+    data: (amenityData?.data as IAmenitiesCategoryProps[]) || [],
     columns,
     pageSize: pageSize,
     pagination: true,
@@ -242,8 +231,7 @@ export const AmenityPage = () => {
   };
 
   const table = useAdvanceTable({
-    ...tableOptions,
-    sortable: true
+    ...tableOptions
   });
 
   const handleSearchInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -273,13 +261,13 @@ export const AmenityPage = () => {
         ]}
       />
       <div className="mb-9">
-        <h2 className="mb-4">Amenities</h2>
+        <h2 className="mb-4">Amenities Category</h2>
         <FilterTab tabItems={tabItems} className="mb-2" />
         <AdvanceTableProvider {...table}>
           <div className="mb-4">
             <div className="d-flex flex-wrap gap-3">
               <SearchBox
-                placeholder="Search amenities"
+                placeholder="Search amenities category"
                 onChange={handleSearchInputChange}
               />
               <div className="scrollbar overflow-hidden-y">
@@ -301,7 +289,7 @@ export const AmenityPage = () => {
           <div className="mx-n4 px-4 mx-lg-n6 px-lg-6 bg-body-emphasis border-top border-bottom border-translucent position-relative top-1">
             <AdvanceTable
               isLoading={
-                isAmenityLoading || isNewAmenityLoading || isDeleteLoading
+                isAmenityLoading || isNewLoading || isDeleteAmenityLoading
               }
               tableProps={{ className: 'phoenix-table fs-9', size: 'sm' }}
             />
@@ -312,12 +300,11 @@ export const AmenityPage = () => {
       <Modal show={show} onHide={handleClose}>
         <Formik
           initialValues={{
-            amenity_name: '',
-            default_action: false,
-            mst_amenities: ''
+            AmenitiesCategory: '',
+            AmenitiesCategoryIcon: ''
           }}
           onSubmit={onNewAmenity}
-          validationSchema={amenityValidationSchema}
+          validationSchema={amenityCategoryValidationSchema}
         >
           {({
             handleBlur,
@@ -329,44 +316,38 @@ export const AmenityPage = () => {
           }) => (
             <Form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
               <Modal.Header closeButton>
-                <Modal.Title>Create New Amenity</Modal.Title>
+                <Modal.Title>Create New Amenity Category</Modal.Title>
               </Modal.Header>
               <Modal.Body className="d-flex flex-column gap-3">
-                <FloatingLabel label="amenity name">
+                <FloatingLabel label="category name">
                   <Form.Control
                     size="sm"
-                    value={values.amenity_name}
-                    onChange={handleChange('amenity_name')}
-                    onBlur={handleBlur('amenity_name')}
+                    value={values.AmenitiesCategory}
+                    onChange={handleChange('AmenitiesCategory')}
+                    onBlur={handleBlur('AmenitiesCategory')}
                     type="text"
                     placeholder="amenity name"
                     autoFocus
                   />
-                  {touched.amenity_name && (
-                    <p className="text-danger">{errors.amenity_name}</p>
+                  {touched.AmenitiesCategory && (
+                    <p className="text-danger">{errors.AmenitiesCategory}</p>
                   )}
                 </FloatingLabel>
-                {!isMasterAmenityDataLoading && (
-                  <Form.Select
+                <FloatingLabel label="category icon">
+                  <Form.Control
                     size="sm"
-                    value={values.mst_amenities as string}
-                    onChange={handleChange('mst_amenities')}
-                    onBlur={handleBlur('mst_amenities')}
-                  >
-                    <option value={''}>All</option>
-                    {masterAmenityData?.data.map(({ amenity_name, id }) => (
-                      <option value={id} key={id}>
-                        {amenity_name}
-                      </option>
-                    ))}
-                  </Form.Select>
-                )}
-                <Form.Switch
-                  checked={values.default_action as boolean}
-                  onChange={handleChange('default_action')}
-                  onBlur={handleBlur('default_action')}
-                  label="Mark as active"
-                />
+                    value={values.AmenitiesCategoryIcon}
+                    onChange={handleChange('AmenitiesCategoryIcon')}
+                    onBlur={handleBlur('AmenitiesCategoryIcon')}
+                    type="text"
+                    placeholder="amenity icon"
+                  />
+                  {touched.AmenitiesCategoryIcon && (
+                    <p className="text-danger">
+                      {errors.AmenitiesCategoryIcon}
+                    </p>
+                  )}
+                </FloatingLabel>
               </Modal.Body>
               <Modal.Footer>
                 <Button

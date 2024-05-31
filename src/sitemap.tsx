@@ -1,5 +1,10 @@
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { Icon, UilChartPie } from '@iconscout/react-unicons';
+import {
+  Icon,
+  UilChartPie,
+  UilCommentPlus,
+  UilSignOutAlt
+} from '@iconscout/react-unicons';
 
 export interface Route {
   name: string;
@@ -47,18 +52,13 @@ export const routes: RouteItems[] = [
         icon: 'triangle',
         pages: [
           {
-            path: '/admin/amenity',
-            name: 'Amenity',
-            active: true
-          },
-          {
-            path: '/admin/master/amenity',
-            name: 'Master Amenity',
-            active: true
-          },
-          {
             path: '/admin/list-room',
             name: 'List room',
+            active: true
+          },
+          {
+            path: '/admin/new-room',
+            name: 'Add room',
             active: true
           }
         ]
@@ -108,5 +108,53 @@ export const routes: RouteItems[] = [
         icon: 'message-circle'
       }
     ]
+  },
+  {
+    label: 'Others Options',
+    icon: UilCommentPlus,
+    pages: [
+      {
+        name: 'System Code',
+        active: true,
+        path: '/admin/system-code'
+      },
+      {
+        name: 'property Type',
+        active: true,
+        path: '/admin/property-type'
+      },
+
+      {
+        path: '/admin/amenity',
+        name: 'Amenity',
+        active: true
+      },
+      {
+        path: '/admin/master/amenity',
+        name: 'Master Amenity',
+        active: true
+      },
+      {
+        path: '/admin/payment-mode',
+        name: 'Payment Mode',
+        active: true
+      },
+      {
+        path: '/admin/room/category',
+        name: 'Room Category',
+        active: true
+      },
+      {
+        path: '/admin/room/bed',
+        name: 'Bed Type',
+        active: true
+      }
+    ]
+  },
+  {
+    label: 'Logout',
+    active: true,
+    icon: UilSignOutAlt,
+    pages: []
   }
 ];

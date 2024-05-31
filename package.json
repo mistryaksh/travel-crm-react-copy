@@ -2,6 +2,12 @@
   "name": "phoenix-react",
   "version": "1.3.0",
   "private": true,
+  "eslintConfig": {
+    "rules": {
+      "no-unused-vars": 0,
+      "@typescript-eslint/no-unused-vars": 0
+    }
+  },
   "dependencies": {
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
     "@fortawesome/fontawesome-svg-core": "^6.3.0",

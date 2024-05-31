@@ -4,7 +4,7 @@ import useToggleStyle from 'hooks/useToggleStyle';
 import { useAppContext } from 'providers/AppProvider';
 import { useSettingsPanelContext } from 'providers/SettingsPanelProvider';
 import { useEffect } from 'react';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 import { store } from './redux';
 
@@ -33,7 +33,7 @@ const App = () => {
   }, [isRTL]);
 
   return (
-    <Provider store={store}>
+    <ReduxProvider store={store}>
       {!isStylesheetLoaded ? (
         <div
           style={{
@@ -56,7 +56,7 @@ const App = () => {
           )}
         </>
       )}
-    </Provider>
+    </ReduxProvider>
   );
 };
 
