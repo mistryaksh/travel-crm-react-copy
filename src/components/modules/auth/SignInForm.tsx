@@ -8,7 +8,6 @@ import { UserSignInValidationSchema } from 'validation';
 import { IUserProps } from 'interface';
 
 const SignInForm = ({
-  layout,
   loginFunc,
   isLoading
 }: {
@@ -27,7 +26,7 @@ const SignInForm = ({
         <div>
           <Formik
             initialValues={{
-              email: 'mistryaksh1998@gmail.com',
+              email: 'karniresandesh@gmail.com',
               password: 'abc123'
             }}
             validationSchema={UserSignInValidationSchema}
@@ -94,7 +93,7 @@ const SignInForm = ({
                   </Col>
                   <Col xs="auto">
                     <Link
-                      to={`/pages/authentication/${layout}/forgot-password`}
+                      to={`/admin/forgot-password`}
                       className="fs-9 fw-semibold"
                     >
                       Forgot Password?
@@ -109,6 +108,11 @@ const SignInForm = ({
                 >
                   Sign In
                 </Button>
+                <div className="text-center">
+                  <Link to={`/admin/sign-up`} className="fs-9 fw-bold">
+                    Don't have an account? Sign Up
+                  </Link>
+                </div>
               </form>
             )}
           </Formik>
